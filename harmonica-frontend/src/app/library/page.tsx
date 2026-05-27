@@ -243,32 +243,73 @@ export default function LibraryPage() {
       }));
 
       try {
-        // 1. Get client token for direct upload
-        const tokenRes = await api.get('/tracks/blob-token', {
-          params: { filename },
-        });
-        const { clientToken, pathname } = tokenRes.data;
+        let blobUrl = '';
+        let uploadSuccess = false;
 
-        setUploads((prev) => ({
-          ...prev,
-          [filename]: { filename, progress: 10, status: 'uploading' },
-        }));
+        // 1. Try Vercel Blob direct upload (only if token is not default placeholder)
+        try {
+          const tokenRes = await api.get('/tracks/blob-token', {
+            params: { filename },
+          });
+          const { clientToken, pathname } = tokenRes.data;
 
-        // 2. Direct upload to Vercel Blob
-        const blob = await put(pathname, file, {
-          access: 'public',
-          token: clientToken,
-          onUploadProgress: (progressEvent) => {
+          if (clientToken && !clientToken.includes('xxxxxxxxxxxxxxxxxxxxx')) {
             setUploads((prev) => ({
               ...prev,
-              [filename]: {
-                filename,
-                progress: Math.round(10 + (progressEvent.percentage || 0) * 0.8),
-                status: 'uploading',
-              },
+              [filename]: { filename, progress: 10, status: 'uploading' },
             }));
-          },
-        });
+
+            // Direct upload to Vercel Blob
+            const blob = await put(pathname, file, {
+              access: 'public',
+              token: clientToken,
+              onUploadProgress: (progressEvent) => {
+                setUploads((prev) => ({
+                  ...prev,
+                  [filename]: {
+                    filename,
+                    progress: Math.round(10 + (progressEvent.percentage || 0) * 0.8),
+                    status: 'uploading',
+                  },
+                }));
+              },
+            });
+            blobUrl = blob.url;
+            uploadSuccess = true;
+          }
+        } catch (blobErr: any) {
+          console.warn('Vercel Blob direct upload failed or not configured, falling back to local server...', blobErr);
+        }
+
+        // 2. Fallback: upload file directly to local backend Express server
+        if (!uploadSuccess) {
+          setUploads((prev) => ({
+            ...prev,
+            [filename]: { filename, progress: 10, status: 'uploading' },
+          }));
+
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const localRes = await api.post('/tracks/local-upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+            onUploadProgress: (progressEvent) => {
+              const total = progressEvent.total || file.size;
+              const percent = Math.round((progressEvent.loaded / total) * 100);
+              setUploads((prev) => ({
+                ...prev,
+                [filename]: {
+                  filename,
+                  progress: Math.round(10 + percent * 0.8),
+                  status: 'uploading',
+                },
+              }));
+            },
+          });
+          blobUrl = localRes.data.url;
+        }
 
         setUploads((prev) => ({
           ...prev,
@@ -276,8 +317,8 @@ export default function LibraryPage() {
         }));
 
         // 3. Register on node backend
-        const regRes = await api.post('/tracks/upload', {
-          blobUrl: blob.url,
+        await api.post('/tracks/upload', {
+          blobUrl,
           filename: file.name,
           fileSize: file.size,
         });

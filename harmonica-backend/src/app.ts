@@ -8,6 +8,8 @@ import authRoutes from './routes/auth';
 import trackRoutes from './routes/tracks';
 import playlistRoutes from './routes/playlists';
 
+import path from 'path';
+
 dotenv.config();
 
 const app = express();
@@ -20,6 +22,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {

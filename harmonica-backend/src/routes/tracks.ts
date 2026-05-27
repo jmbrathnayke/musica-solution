@@ -4,6 +4,27 @@ import { Track } from '../entities/Track';
 import { authGuard, AuthRequest } from '../middleware/authGuard';
 import fetch from 'node-fetch';
 import { generateClientTokenFromReadWriteToken } from '@vercel/blob/client';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+
+const uploadDir = path.join(__dirname, '../../public/uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (_req, file, cb) => {
+    const timestamp = Date.now();
+    const cleanFilename = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+    cb(null, `${timestamp}_${cleanFilename}`);
+  },
+});
+
+const upload = multer({ storage });
 
 const router = Router();
 const trackRepo = () => AppDataSource.getRepository(Track);
@@ -70,6 +91,28 @@ router.get('/blob-token', authGuard, async (req: AuthRequest, res: Response): Pr
   } catch (err: any) {
     console.error('[BLOB-TOKEN] Error:', err);
     res.status(500).json({ error: 'Failed to generate token' });
+  }
+});
+
+// ─── POST /api/tracks/local-upload — Local file upload fallback ──────────────
+router.post('/local-upload', authGuard, upload.single('file'), (req: AuthRequest, res: Response): void => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ error: 'No file uploaded' });
+      return;
+    }
+    const host = req.headers.host || 'localhost:4000';
+    const protocol = req.secure ? 'https' : 'http';
+    const url = `${protocol}://${host}/uploads/${req.file.filename}`;
+
+    res.json({
+      url,
+      filename: req.file.originalname,
+      fileSize: req.file.size,
+    });
+  } catch (err) {
+    console.error('[LOCAL-UPLOAD] Error:', err);
+    res.status(500).json({ error: 'Failed to upload locally' });
   }
 });
 
