@@ -141,7 +141,7 @@ function SortableTrackItem({
                 <span className="text-cyan-400 uppercase">Seamless Mix</span>
                 <span className="text-zinc-500">•</span>
                 <span className="text-zinc-400 font-mono">
-                  Δ {bpmDelta !== null ? (bpmDelta >= 0 ? `+${bpmDelta.toFixed(1)}` : `${bpmDelta.toFixed(1)}`) : '--'} BPM
+                  Δ {typeof bpmDelta === 'number' ? (bpmDelta >= 0 ? `+${bpmDelta.toFixed(1)}` : `${bpmDelta.toFixed(1)}`) : '--'} BPM
                 </span>
               </>
             ) : keyCompatibility === 'incompatible' || Math.abs(bpmDelta || 0) > 6 ? (
@@ -150,7 +150,7 @@ function SortableTrackItem({
                 <span className="text-red-400 uppercase">Mix Clash</span>
                 <span className="text-zinc-500">•</span>
                 <span className="text-zinc-400 font-mono">
-                  Δ {bpmDelta !== null ? (bpmDelta >= 0 ? `+${bpmDelta.toFixed(1)}` : `${bpmDelta.toFixed(1)}`) : '--'} BPM
+                  Δ {typeof bpmDelta === 'number' ? (bpmDelta >= 0 ? `+${bpmDelta.toFixed(1)}` : `${bpmDelta.toFixed(1)}`) : '--'} BPM
                 </span>
               </>
             ) : (
@@ -159,7 +159,7 @@ function SortableTrackItem({
                 <span className="text-amber-400 uppercase">Shift Transition</span>
                 <span className="text-zinc-500">•</span>
                 <span className="text-zinc-400 font-mono">
-                  Δ {bpmDelta !== null ? (bpmDelta >= 0 ? `+${bpmDelta.toFixed(1)}` : `${bpmDelta.toFixed(1)}`) : '--'} BPM
+                  Δ {typeof bpmDelta === 'number' ? (bpmDelta >= 0 ? `+${bpmDelta.toFixed(1)}` : `${bpmDelta.toFixed(1)}`) : '--'} BPM
                 </span>
               </>
             )}
