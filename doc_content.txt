@@ -1,0 +1,84 @@
+﻿DJ Harmonic Mix Planner & Audio Analysis System Project Overview Document
+Introduction
+Professional DJs spend significant time organizing tracks before live performances such as club events, festivals, weddings, and private parties. DJs must ensure that tracks transition smoothly in terms of BPM, harmonic key compatibility, sound energy, and musical flow.
+This project proposes a web-based intelligent DJ playlist planning system capable of analyzing uploaded tracks and automatically generating optimized harmonic mixing playlists.
+Problem Statement
+Current DJ software requires manual playlist arrangement and advanced musical knowledge. DJs face challenges with BPM transitions, harmonic mixing, and maintaining crowd energy flow during performances. Preparing a professional DJ set can take several hours.
+Proposed Solution
+The proposed solution is an intelligent web application that automates DJ set preparation using audio analysis and harmonic mixing algorithms.
+The system will:
+Analyze uploaded tracks
+Detect BPM and harmonic key
+Analyze lows, mids, highs, and energy levels
+Automatically recommend harmonic mixing sequences
+Generate optimized DJ playlists
+Export finalized playlists to USB/HDD devices
+Main Features
+Track Upload & Library Management
+BPM Detection
+Harmonic Key Detection
+Frequency Analysis
+Waveform Generation
+Energy Analysis
+Harmonic Playlist Recommendation
+Automatic Playlist Generation
+Drag-and-Drop Playlist Editing
+Playlist Export (CSV/M3U/USB/HDD)
+Harmonic Mixing Logic
+The system uses Camelot Wheel compatibility rules to recommend smooth musical transitions.
+Example:
+8A ∩é« 7A, 8A, 9A, 8B
+6B ∩é« 5B, 6B, 7B, 6A
+The system also ensures smooth BPM progression to avoid sudden tempo changes during DJ performances.
+System Workflow
+User Uploads Tracks
+∩é»
+Audio Analysis Engine
+∩é»
+BPM + Key + Energy Detection
+∩é»
+Track Database Storage
+∩é»
+Harmonic Mixing Engine
+∩é»
+Automatic Playlist Generation
+∩é»
+Manual Playlist Editing
+∩é»
+Export Playlist to USB/HDD
+Functional Modules
+User Management System
+Track Upload & Library
+Audio Analysis Engine
+Harmonic Mixing Recommendation Engine
+Automatic Playlist Generator
+Playlist Editor
+Export System
+Suggested Technology Stack
+Frontend:
+Nextjs
+Backend:
+Node.js + Express +typeORM
+Database:
+Neon db (migration file need,data seed)
+Audio Analysis:
+Python
+Librosa
+Essentia
+Aubio
+FFmpeg
+Expected Benefits
+Faster playlist preparation
+Improved harmonic mixing
+Better live performance quality
+Easier workflow for beginner DJs
+Professional set preparation automation
+Future Enhancements
+AI-powered playlist recommendations
+Real-time DJ assistance
+Crowd energy prediction
+Cloud synchronization
+Spotify/SoundCloud/Beatport integration
+Conclusion
+The DJ Harmonic Mix Planner & Audio Analysis System is an intelligent web-based solution designed to simplify and automate DJ set preparation.
+By combining audio analysis, BPM detection, harmonic compatibility, and playlist optimization, the system helps DJs create professional-quality playlists efficiently while improving live performance quality.

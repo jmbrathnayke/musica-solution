@@ -1,0 +1,23 @@
+# harmonica-backend
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Build output
+dist/
+
+# Dependencies
+node_modules/
+
+# Uploaded audio files (local disk fallback)
+uploads/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
