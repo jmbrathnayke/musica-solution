@@ -3,7 +3,7 @@ import { AppDataSource } from '../config/database';
 import { Track } from '../entities/Track';
 import { authGuard, AuthRequest } from '../middleware/authGuard';
 import fetch from 'node-fetch';
-import { generateClientTokenFromReadWriteToken } from '@vercel/blob';
+import { generateClientTokenFromReadWriteToken } from '@vercel/blob/client';
 
 const router = Router();
 const trackRepo = () => AppDataSource.getRepository(Track);

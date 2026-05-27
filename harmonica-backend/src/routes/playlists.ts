@@ -6,6 +6,8 @@ import { Track } from '../entities/Track';
 import { authGuard, AuthRequest } from '../middleware/authGuard';
 import fetch from 'node-fetch';
 import archiver from 'archiver';
+import path from 'path';
+import { URL } from 'url';
 
 const router = Router();
 const playlistRepo = () => AppDataSource.getRepository(Playlist);
@@ -15,12 +17,12 @@ const playlistTrackRepo = () => AppDataSource.getRepository(PlaylistTrack);
 export function checkKeyCompatibility(keyA: string, keyB: string): 'compatible' | 'moderate' | 'incompatible' {
   if (!keyA || !keyB) return 'incompatible';
   if (keyA === keyB) return 'compatible';
-  
+
   const numA = parseInt(keyA.slice(0, -1));
   const letterA = keyA.slice(-1);
   const numB = parseInt(keyB.slice(0, -1));
   const letterB = keyB.slice(-1);
-  
+
   if (isNaN(numA) || isNaN(numB)) return 'incompatible';
 
   const numDiff = Math.abs(numA - numB);
@@ -29,15 +31,15 @@ export function checkKeyCompatibility(keyA: string, keyB: string): 'compatible' 
   if (numA === numB && letterA !== letterB) {
     return 'compatible'; // e.g. 8A -> 8B
   }
-  
+
   if (isNumericAdjacent && letterA === letterB) {
     return 'compatible'; // e.g. 8A -> 9A
   }
-  
+
   if (isNumericAdjacent && letterA !== letterB) {
     return 'moderate'; // e.g. 8A -> 9B or 8A -> 7B
   }
-  
+
   return 'incompatible';
 }
 
@@ -464,8 +466,8 @@ router.get('/:id/export/zip', authGuard, async (req: AuthRequest, res: Response)
       if (t) {
         const duration = Math.round(t.durationSeconds || 0);
         // Extract original extension or default to .mp3
-        const parsedUrl = urlparse(t.blobUrl);
-        const ext = os.path.splitext(parsedUrl.path)[1] || '.mp3';
+        const parsedUrl = new URL(t.blobUrl);
+        const ext = path.extname(parsedUrl.pathname) || '.mp3';
         const fileInZip = `${pt.position.toString().padStart(2, '0')} - ${t.artist} - ${t.title}${ext}`.replace(/[^a-zA-Z0-9.\-_\s]/g, '_');
 
         m3u += `#EXTINF:${duration},${t.artist} - ${t.title}\n`;
@@ -474,7 +476,7 @@ router.get('/:id/export/zip', authGuard, async (req: AuthRequest, res: Response)
         try {
           const fileResponse = await fetch(t.blobUrl);
           if (fileResponse.ok && fileResponse.body) {
-            archive.append(fileResponse.body, { name: fileInZip });
+            archive.append(fileResponse.body as any, { name: fileInZip });
           }
         } catch (downloadErr) {
           console.error(`Failed to download ${t.title} for ZIP export:`, downloadErr);
